@@ -17,7 +17,7 @@
                                 @foreach(collect($listDetails)->except('search') as $name => $val)
                                     <input type="hidden" name="{{ $name }}" value="{{ $val }}">
                                 @endforeach
-                                <input type="text" name="search" placeholder="{{ trans('settings.users_search') }}"
+                                <input type="hidden" name="search" placeholder="{{ trans('settings.users_search') }}"
                                        @if($listDetails['search']) value="{{$listDetails['search']}}" @endif>
                             </form>
                         </div>
