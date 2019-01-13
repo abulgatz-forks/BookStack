@@ -17,7 +17,7 @@
                                 @foreach(collect($listDetails)->except('search') as $name => $val)
                                     <input type="hidden" name="{{ $name }}" value="{{ $val }}">
                                 @endforeach
-                                <input type="hidden" name="search" placeholder="{{ trans('settings.users_search') }}"
+                                <input type="text" name="search" placeholder="{{ trans('settings.users_search') }}"
                                        @if($listDetails['search']) value="{{$listDetails['search']}}" @endif>
                             </form>
                         </div>
@@ -73,7 +73,7 @@
                             </td>
                             <td>
                                 @if($user->authorization_token)
-                                    <input readonly type="text" value="{{ $user->authorization_link }}" id="authorization-link-{{$user->getKey()}}">
+                                    <input readonly type="hidden" value="{{ $user->authorization_link }}" id="authorization-link-{{$user->getKey()}}">
                                     <a href="#" onclick="return copyToClipboard({{ $user->getKey() }})">Copy</a>
                                     or
                                     <a href="#" onclick="document.getElementById(`generate-form-{{ $user->getKey() }}`).submit();">Revoke</a>
