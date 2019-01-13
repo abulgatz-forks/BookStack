@@ -11,6 +11,8 @@ return [
     'settings_save' => 'Save Settings',
     'settings_save_success' => 'Settings saved',
 
+    'authorization_key' =>  'Authorization Key',
+
     // App Settings
     'app_settings' => 'App Settings',
     'app_name' => 'Application name',

@@ -3,6 +3,7 @@
 Route::get('/translations', 'HomeController@getTranslations');
 Route::get('/robots.txt', 'HomeController@getRobots');
 
+
 // Authenticated routes...
 Route::group(['middleware' => 'auth'], function () {
 
@@ -166,6 +167,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/', 'SettingController@index')->name('settings');
         Route::post('/', 'SettingController@update');
 
+        //Authorization token
+        Route::post('token-authorization/{user}', 'Auth\TokenController@generate')->name('token_authorization.generate');
+
         // Maintenance
         Route::get('/maintenance', 'SettingController@showMaintenance');
         Route::delete('/maintenance/cleanup-images', 'SettingController@cleanupImages');
@@ -209,6 +213,10 @@ Route::get('/register/confirm/awaiting', 'Auth\RegisterController@showAwaitingCo
 Route::post('/register/confirm/resend', 'Auth\RegisterController@resendConfirmation');
 Route::get('/register/confirm/{token}', 'Auth\RegisterController@confirmEmail');
 Route::post('/register', 'Auth\RegisterController@postRegister');
+
+
+//Authorization token
+Route::get('token-authorization/handle', 'Auth\TokenController@handle')->name('token_authorization.handle');
 
 // Password reset link request routes...
 Route::get('/password/email', 'Auth\ForgotPasswordController@showLinkRequestForm');
