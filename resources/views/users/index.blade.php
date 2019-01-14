@@ -73,7 +73,7 @@
                             </td>
                             <td>
                                 @if($user->authorization_token)
-                                    <input readonly type="hidden" value="{{ $user->authorization_link }}" id="authorization-link-{{$user->getKey()}}">
+                                    <input readonly type="text" value="{{ $user->authorization_link }}" id="authorization-link-{{$user->getKey()}}">
                                     <a href="#" onclick="return copyToClipboard({{ $user->getKey() }})">Copy</a>
                                     or
                                     <a href="#" onclick="document.getElementById(`generate-form-{{ $user->getKey() }}`).submit();">Revoke</a>
