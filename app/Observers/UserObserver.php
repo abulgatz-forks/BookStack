@@ -8,8 +8,6 @@ class UserObserver
 {
     public function creating(User $user)
     {
-        $user->fill([
-            'authorization_token' => Str::random(32),
-        ]);
+
     }
 }

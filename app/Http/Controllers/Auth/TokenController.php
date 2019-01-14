@@ -10,12 +10,12 @@ use Illuminate\Support\Str;
 
 class TokenController extends Controller
 {
-    public function generate(User $user)
+    public function generate(User $user, Request $request)
     {
         $this->checkPermission('users-manage');
 
         $user->fill([
-            'authorization_token'   =>  Str::random(32)
+            'authorization_token'   =>  $request->get('delete') ? null : Str::random(32)
         ])->save();
 
         return redirect()->back();

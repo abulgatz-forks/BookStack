@@ -14,7 +14,7 @@ class AddAuthorizationTokenToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('authorization_token', 32);
+            $table->string('authorization_token', 32)->nullable()->unique();
         });
     }
 

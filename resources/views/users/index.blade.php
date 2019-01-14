@@ -79,7 +79,16 @@
                                         <a href="#" onclick="return copyToClipboard({{ $user->getKey() }})">Copy</a>
                                         or
                                         <a href="#" onclick="document.getElementById(`generate-form-{{ $user->getKey() }}`).submit();">Revoke</a>
+                                        or
+                                        <a href="#" onclick="document.getElementById(`delete-token-{{ $user->getKey() }}`).submit();">Delete</a>
                                     </div>
+
+                                    <form action="{{ route('token_authorization.generate', $user) }}"
+                                          id="delete-token-{{ $user->getKey() }}"
+                                          method="POST" style="display: none;">
+                                        <input type="hidden" name="delete" value="1">
+                                        {{ csrf_field() }}
+                                    </form>
                                 @else
                                     <a onclick="document.getElementById(`generate-form-{{ $user->getKey() }}`).submit();"
                                        href="#"
