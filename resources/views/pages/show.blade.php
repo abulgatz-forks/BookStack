@@ -178,7 +178,7 @@
                 asyncFind(query) {
                     this.isLoading = true
 
-                    axios.get('/search/users')
+                    axios.get('/search/users', {params: {query: query}})
                         .then(({data}) => {
                             this.users = data;
                             this.isLoading = false;
