@@ -7,32 +7,47 @@
     <div class="col-sm-6 col-xs-11">
         <div class="action-buttons faded">
             <span dropdown class="dropdown-container">
-                <div dropdown-toggle class="text-button text-primary">@icon('export'){{ trans('entities.export') }}</div>
+                <div dropdown-toggle
+                     class="text-button text-primary">@icon('export'){{ trans('entities.export') }}</div>
                 <ul class="wide">
-                    <li><a href="{{ $book->getUrl('/export/html') }}" target="_blank">{{ trans('entities.export_html') }} <span class="text-muted float right">.html</span></a></li>
-                    <li><a href="{{ $book->getUrl('/export/pdf') }}" target="_blank">{{ trans('entities.export_pdf') }} <span class="text-muted float right">.pdf</span></a></li>
-                    <li><a href="{{ $book->getUrl('/export/plaintext') }}" target="_blank">{{ trans('entities.export_text') }} <span class="text-muted float right">.txt</span></a></li>
+                    <li><a href="{{ $book->getUrl('/export/html') }}" target="_blank">{{ trans('entities.export_html') }} <span
+                                    class="text-muted float right">.html</span></a></li>
+                    <li><a href="{{ $book->getUrl('/export/pdf') }}" target="_blank">{{ trans('entities.export_pdf') }} <span
+                                    class="text-muted float right">.pdf</span></a></li>
+                    <li><a href="{{ $book->getUrl('/export/plaintext') }}" target="_blank">{{ trans('entities.export_text') }} <span
+                                    class="text-muted float right">.txt</span></a></li>
                 </ul>
             </span>
+
             @if(userCan('page-create', $book))
-                <a href="{{ $book->getUrl('/create-page') }}" class="text-pos text-button">@icon('add'){{ trans('entities.pages_new') }}</a>
+                @include('partials.auth_link')
+            @endif
+
+            @if(userCan('page-create', $book))
+                <a href="{{ $book->getUrl('/create-page') }}"
+                   class="text-pos text-button">@icon('add'){{ trans('entities.pages_new') }}</a>
             @endif
             @if(userCan('chapter-create', $book))
-                <a href="{{ $book->getUrl('/create-chapter') }}" class="text-pos text-button">@icon('add'){{ trans('entities.chapters_new') }}</a>
+                <a href="{{ $book->getUrl('/create-chapter') }}"
+                   class="text-pos text-button">@icon('add'){{ trans('entities.chapters_new') }}</a>
             @endif
             @if(userCan('book-update', $book) || userCan('restrictions-manage', $book) || userCan('book-delete', $book))
                 <div dropdown class="dropdown-container">
                     <a dropdown-toggle class="text-primary text-button">@icon('more'){{ trans('common.more') }}</a>
                     <ul>
                         @if(userCan('book-update', $book))
-                            <li><a href="{{ $book->getUrl('/edit') }}" class="text-primary">@icon('edit'){{ trans('common.edit') }}</a></li>
-                            <li><a href="{{ $book->getUrl('/sort') }}" class="text-primary">@icon('sort'){{ trans('common.sort') }}</a></li>
+                            <li><a href="{{ $book->getUrl('/edit') }}"
+                                   class="text-primary">@icon('edit'){{ trans('common.edit') }}</a></li>
+                            <li><a href="{{ $book->getUrl('/sort') }}"
+                                   class="text-primary">@icon('sort'){{ trans('common.sort') }}</a></li>
                         @endif
                         @if(userCan('restrictions-manage', $book))
-                            <li><a href="{{ $book->getUrl('/permissions') }}" class="text-primary">@icon('lock'){{ trans('entities.permissions') }}</a></li>
+                            <li><a href="{{ $book->getUrl('/permissions') }}"
+                                   class="text-primary">@icon('lock'){{ trans('entities.permissions') }}</a></li>
                         @endif
                         @if(userCan('book-delete', $book))
-                            <li><a href="{{ $book->getUrl('/delete') }}" class="text-neg">@icon('delete'){{ trans('common.delete') }}</a></li>
+                            <li><a href="{{ $book->getUrl('/delete') }}"
+                                   class="text-neg">@icon('delete'){{ trans('common.delete') }}</a></li>
                         @endif
                     </ul>
                 </div>
@@ -52,9 +67,12 @@
     <div class="card">
         <div class="body">
             <form v-on:submit.prevent="searchBook" class="search-box">
-                <input v-model="searchTerm" v-on:change="checkSearchForm()" type="text" name="term" placeholder="{{ trans('entities.books_search_this') }}">
+                <input v-model="searchTerm" v-on:change="checkSearchForm()" type="text" name="term"
+                       placeholder="{{ trans('entities.books_search_this') }}">
                 <button type="submit">@icon('search')</button>
-                <button v-if="searching" v-cloak class="text-neg" v-on:click="clearSearch()" type="button">@icon('close')</button>
+                <button v-if="searching" v-cloak class="text-neg" v-on:click="clearSearch()" type="button">
+                    @icon('close')
+                </button>
             </form>
         </div>
     </div>
@@ -89,6 +107,70 @@
     entity-type="book"
 @stop
 
+@section('head')
+    @parent()
+    <!-- Remember to include jQuery :) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- jQuery Modal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+@endsection
+
+@section('scripts')
+    @parent()
+    <script>
+        Vue.component('multiselect', window.VueMultiselect.default)
+
+        new Vue({
+            el: "#modal",
+
+            data() {
+                return {
+                    users: [],
+                    selected: null,
+                    isLoading: false,
+                    link: ''
+                }
+            },
+
+            methods: {
+                limitText(count) {
+                    return `and ${count} other users`
+                },
+                asyncFind(query) {
+                    this.isLoading = true
+
+                    axios.get('/search/users')
+                        .then(({data}) => {
+                            this.users = data;
+                            this.isLoading = false;
+                        })
+                },
+                clearAll() {
+                    this.users = []
+                },
+
+                getLink(selected) {
+                    let link = @json(request()->path());
+                    axios.get('/search/link', {params: {user: selected.id, link: link}})
+                        .then(({data}) => {
+                            console.log(data)
+                            this.link = data.link;
+                        })
+                }
+            }
+        })
+    </script>
+@endsection
+
 @section('body')
 
     <div class="container small nopad">
@@ -96,35 +178,40 @@
         <div class="book-content" v-show="!searching">
             <p class="text-muted" v-pre>{!! nl2br(e($book->description)) !!}</p>
             @if(count($bookChildren) > 0)
-            <div class="page-list" v-pre>
-                <hr>
-                @foreach($bookChildren as $childElement)
-                    @if($childElement->isA('chapter'))
-                        @include('chapters/list-item', ['chapter' => $childElement])
-                    @else
-                        @include('pages/list-item', ['page' => $childElement])
-                    @endif
+                <div class="page-list" v-pre>
                     <hr>
-                @endforeach
-            </div>
+                    @foreach($bookChildren as $childElement)
+                        @if($childElement->isA('chapter'))
+                            @include('chapters/list-item', ['chapter' => $childElement])
+                        @else
+                            @include('pages/list-item', ['page' => $childElement])
+                        @endif
+                        <hr>
+                    @endforeach
+                </div>
             @else
                 <div class="well">
                     <p class="text-muted italic">{{ trans('entities.books_empty_contents') }}</p>
-                        @if(userCan('page-create', $book))
-                            <a href="{{ $book->getUrl('/create-page') }}" class="button outline page">@icon('page'){{ trans('entities.books_empty_create_page') }}</a>
-                        @endif
-                        @if(userCan('page-create', $book) && userCan('chapter-create', $book))
-                            &nbsp;&nbsp;<em class="text-muted">-{{ trans('entities.books_empty_or') }}-</em>&nbsp;&nbsp;&nbsp;
-                        @endif
-                        @if(userCan('chapter-create', $book))
-                            <a href="{{ $book->getUrl('/create-chapter') }}" class="button outline chapter">@icon('chapter'){{ trans('entities.books_empty_add_chapter') }}</a>
-                        @endif
+                    @if(userCan('page-create', $book))
+                        <a href="{{ $book->getUrl('/create-page') }}"
+                           class="button outline page">@icon('page'){{ trans('entities.books_empty_create_page') }}</a>
+                    @endif
+                    @if(userCan('page-create', $book) && userCan('chapter-create', $book))
+                        &nbsp;&nbsp;<em class="text-muted">-{{ trans('entities.books_empty_or') }}-</em>&nbsp;&nbsp;
+                        &nbsp;
+                    @endif
+                    @if(userCan('chapter-create', $book))
+                        <a href="{{ $book->getUrl('/create-chapter') }}"
+                           class="button outline chapter">@icon('chapter'){{ trans('entities.books_empty_add_chapter') }}</a>
+                    @endif
                 </div>
             @endif
 
         </div>
         <div class="search-results" v-cloak v-show="searching">
-            <h3 class="text-muted">{{ trans('entities.search_results') }} <a v-if="searching" v-on:click="clearSearch()" class="text-small">@icon('close'){{ trans('entities.search_clear') }}</a></h3>
+            <h3 class="text-muted">{{ trans('entities.search_results') }} <a v-if="searching" v-on:click="clearSearch()"
+                                                                             class="text-small">@icon('close'){{ trans('entities.search_clear') }}</a>
+            </h3>
             <div v-if="!searchResults">
                 @include('partials/loading-icon')
             </div>

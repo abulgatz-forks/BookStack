@@ -10,6 +10,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/uploads/images/{path}', 'ImageController@showImage')
         ->where('path', '.*$');
 
+    Route::get('search/users', 'SearchUsersController');
+    Route::get('search/link', 'Auth\TokenController@retrieve');
+
     Route::group(['prefix' => 'pages'], function() {
         Route::get('/recently-created', 'PageController@showRecentlyCreated');
         Route::get('/recently-updated', 'PageController@showRecentlyUpdated');

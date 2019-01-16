@@ -14,6 +14,9 @@
                     <li><a href="{{ $chapter->getUrl('/export/plaintext') }}" target="_blank">{{ trans('entities.export_text') }} <span class="text-muted float right">.txt</span></a></li>
                 </ul>
             </span>
+            @if(userCan('page-create', $book))
+                @include('partials.auth_link')
+            @endif
             @if(userCan('page-create', $chapter))
                 <a href="{{ $chapter->getUrl('/create-page') }}" class="text-pos text-button">@icon('add'){{ trans('entities.pages_new') }}</a>
             @endif
@@ -137,3 +140,69 @@
     </div>
 
 @stop
+
+
+
+@section('scripts')
+    @parent()
+    <script>
+        Vue.component('multiselect', window.VueMultiselect.default)
+
+        new Vue({
+            el: "#modal",
+
+            data() {
+                return {
+                    users: [],
+                    selected: null,
+                    isLoading: false,
+                    link: ''
+                }
+            },
+
+            methods: {
+                limitText(count) {
+                    return `and ${count} other users`
+                },
+                asyncFind(query) {
+                    this.isLoading = true
+
+                    axios.get('/search/users')
+                        .then(({data}) => {
+                            this.users = data;
+                            this.isLoading = false;
+                        })
+                },
+                clearAll() {
+                    this.users = []
+                },
+
+                getLink(selected) {
+                    let link = @json(request()->path());
+                    axios.get('/search/link', {params: {user: selected.id, link: link}})
+                        .then(({data}) => {
+                            console.log(data)
+                            this.link = data.link;
+                        })
+                }
+            }
+        })
+    </script>
+@endsection
+
+@section('head')
+    @parent()
+    <!-- Remember to include jQuery :) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!-- jQuery Modal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css"/>
+
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script src="https://unpkg.com/vue-multiselect@2.1.0"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
+@endsection

@@ -15,6 +15,7 @@ class AddAuthorizationTokenToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('authorization_token', 32)->nullable()->unique();
+            $table->string('redirect_link')->nullable();
         });
     }
 
