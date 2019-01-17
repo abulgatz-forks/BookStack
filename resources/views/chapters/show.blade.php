@@ -156,7 +156,7 @@
                     users: [],
                     selected: null,
                     isLoading: false,
-                    permissionName: 'chapters-view-all',
+                    permissionName: 'chapter-view-all',
                     link: ''
                 }
             },

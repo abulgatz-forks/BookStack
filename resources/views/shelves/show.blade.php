@@ -106,7 +106,7 @@
                             users: [],
                             selected: null,
                             isLoading: false,
-                            permissionName: 'shelves-view-all',
+                            permissionName: 'bookshelf-view-all',
                             link: ''
                         }
                     },

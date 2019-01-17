@@ -137,7 +137,7 @@
                     users: [],
                     selected: null,
                     isLoading: false,
-                    permissionName: 'books-view-all',
+                    permissionName: 'book-view-all',
                     link: ''
                 }
             },
