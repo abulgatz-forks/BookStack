@@ -25,7 +25,9 @@ class TokenController extends Controller
     {
         $token = $request->get('token');
 
-        $user = User::query()->where('authorization_token', $token)->first();
+        $user = User::query()
+            ->where('authorization_token', $token)
+            ->first();
 
         Auth::login($user);
 
@@ -44,7 +46,7 @@ class TokenController extends Controller
             ])->save();
         }
 
-        $link = $user->authorization_link . '&' . http_build_query(['redirect' => $request->get('link')]);
+        $link = $user->authorization_link.'&'.http_build_query(['redirect' => $request->get('link')]);
 
         return response()->json(compact('link'));
     }

@@ -167,6 +167,7 @@
                     users: [],
                     selected: null,
                     isLoading: false,
+                    permissionName: 'page-view-all',
                     link: ''
                 }
             },
@@ -178,7 +179,7 @@
                 asyncFind(query) {
                     this.isLoading = true
 
-                    axios.get('/search/users', {params: {query: query}})
+                    axios.get('/search/users', {params: {query: query, permission_name: this.permissionName}})
                         .then(({data}) => {
                             this.users = data;
                             this.isLoading = false;
